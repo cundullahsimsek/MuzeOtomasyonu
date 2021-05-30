@@ -23,6 +23,7 @@ import java.sql.Statement;
 import java.awt.event.ActionEvent;
 import javax.swing.JPasswordField;
 import Helper.*;
+import Model.Kullanici;
 import Model.Yonetici;
 import java.awt.Toolkit;
 
@@ -86,7 +87,51 @@ public class Login extends JFrame {
 		w_tabpane.addTab("Giþe Personel Giriþi", null, GiseLogin, null);
 		GiseLogin.setLayout(null);
 		
-		JButton btn_GiseGiris = new JButton("Giri\u015F Yap");
+		JButton btn_GiseGiris = new JButton("Giriþ Yap");
+		btn_GiseGiris.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				
+					if (fld_GiseTc.getText().length()==0 || fld_GiseSifre.getText().length()==0) {
+						Helper.showMsg("fill");
+					}else {
+					
+						try {
+							Connection con = conn.connDb();
+							
+							Statement st = con.createStatement();
+							ResultSet rs = st.executeQuery ("SELECT * From kullanici");
+							
+							while (rs.next()) {
+								if (fld_GiseTc.getText().equals(rs.getString("tcno"))&& fld_GiseSifre.getText().equals(rs.getString("sifre"))) {
+								
+									if (rs.getString("turu").equals("Gise_Personeli")) {
+										Kullanici kullanici = new Kullanici();
+										kullanici.setId(rs.getInt("id"));
+										kullanici.setSifre("sifre");
+										kullanici.setTcno(rs.getString("tcno"));
+										kullanici.setAdi(rs.getString("adi"));
+										kullanici.setSoyadi(rs.getString("soyadi"));
+										kullanici.setTuru(rs.getString("turu"));
+										KullaniciLogin klogin = new KullaniciLogin(kullanici);
+										klogin.setVisible(true);
+										dispose();
+									}else {
+										Helper.showMsg("Kullanýcý bulunamadý !");
+									}
+								
+								
+							}
+								
+							}
+							
+						} catch (SQLException e1) {
+							
+							e1.printStackTrace();
+						}
+					}					
+				}
+			
+		});
 		btn_GiseGiris.setBounds(182, 127, 208, 32);
 		GiseLogin.add(btn_GiseGiris);
 		
@@ -101,7 +146,7 @@ public class Login extends JFrame {
 		lblTcNumaranz_1.setBounds(60, 36, 123, 27);
 		GiseLogin.add(lblTcNumaranz_1);
 		
-		JLabel lblifre_1 = new JLabel("\u015Eifre :");
+		JLabel lblifre_1 = new JLabel("Þifre :");
 		lblifre_1.setHorizontalAlignment(SwingConstants.LEFT);
 		lblifre_1.setFont(new Font("Constantia", Font.BOLD | Font.ITALIC, 13));
 		lblifre_1.setBounds(60, 72, 123, 27);
@@ -116,24 +161,24 @@ public class Login extends JFrame {
 		w_tabpane.addTab("Yönetici Giriþi", null, YoneticiLogin, null);
 		YoneticiLogin.setLayout(null);
 		
-		JLabel lblTcNumaranz = new JLabel("T.C. Numaran\u0131z : ");
+		JLabel lblTcNumaranz = new JLabel("T.C. Numaranýz : ");
 		lblTcNumaranz.setHorizontalAlignment(SwingConstants.LEFT);
 		lblTcNumaranz.setFont(new Font("Constantia", Font.BOLD | Font.ITALIC, 13));
-		lblTcNumaranz.setBounds(62, 31, 123, 27);
+		lblTcNumaranz.setBounds(60, 36, 123, 27);
 		YoneticiLogin.add(lblTcNumaranz);
 		
-		JLabel lblifre = new JLabel("\u015Eifre :");
+		JLabel lblifre = new JLabel("Þifre :");
 		lblifre.setHorizontalAlignment(SwingConstants.LEFT);
 		lblifre.setFont(new Font("Constantia", Font.BOLD | Font.ITALIC, 13));
-		lblifre.setBounds(62, 70, 123, 27);
+		lblifre.setBounds(60, 72, 123, 27);
 		YoneticiLogin.add(lblifre);
 		
 		fld_YoneticiTc = new JTextField();
-		fld_YoneticiTc.setBounds(184, 32, 208, 26);
+		fld_YoneticiTc.setBounds(182, 34, 208, 26);
 		YoneticiLogin.add(fld_YoneticiTc);
 		fld_YoneticiTc.setColumns(10);
 		
-		JButton btn_YoneticiGiris = new JButton("Giri\u015F Yap");
+		JButton btn_YoneticiGiris = new JButton("Giriþ Yap");
 		btn_YoneticiGiris.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				if (fld_YoneticiTc.getText().length()==0 || fld_YoneticiSifre.getText().length()==0) {
@@ -146,18 +191,23 @@ public class Login extends JFrame {
 						Statement st = con.createStatement();
 						ResultSet rs = st.executeQuery ("SELECT * From kullanici");
 						while (rs.next()) {
-							if (fld_YoneticiTc.getText().equals(rs.getString("tcno"))&& fld_YoneticiSifre.getText().equals(rs.getString("sifre")));
-							
-							Yonetici yonetici = new Yonetici();
-							yonetici.setId(rs.getInt("id"));
-							yonetici.setSifre("sifre");
-							yonetici.setTcno(rs.getString("tcno"));
-							yonetici.setAdi(rs.getString("adi"));
-							yonetici.setSoyadi(rs.getString("soyadi"));
-							yonetici.setTuru(rs.getString("turu"));
-							YoneticiLogin yLogin = new YoneticiLogin(yonetici);
-							yLogin.setVisible(true);
-							dispose();
+							if (fld_YoneticiTc.getText().equals(rs.getString("tcno"))&& fld_YoneticiSifre.getText().equals(rs.getString("sifre"))) {
+								if(rs.getString("turu").equals("yonetici")) {
+									Yonetici yonetici = new Yonetici();
+									yonetici.setId(rs.getInt("id"));
+									yonetici.setSifre("sifre");
+									yonetici.setTcno(rs.getString("tcno"));
+									yonetici.setAdi(rs.getString("adi"));
+									yonetici.setSoyadi(rs.getString("soyadi"));
+									yonetici.setTuru(rs.getString("turu"));
+									YoneticiLogin yLogin = new YoneticiLogin(yonetici);
+									yLogin.setVisible(true);
+									dispose();
+								}else {
+									Helper.showMsg("Yetkisiz Kullanýcý veya Kullanýcý Bulunamadý !");
+								}
+								
+							}
 							
 						}
 						
@@ -168,11 +218,11 @@ public class Login extends JFrame {
 				}					
 			}
 		});
-		btn_YoneticiGiris.setBounds(184, 125, 208, 32);
+		btn_YoneticiGiris.setBounds(182, 127, 208, 32);
 		YoneticiLogin.add(btn_YoneticiGiris);
 		
 		fld_YoneticiSifre = new JPasswordField();
-		fld_YoneticiSifre.setBounds(184, 71, 208, 32);
+		fld_YoneticiSifre.setBounds(182, 71, 208, 26);
 		YoneticiLogin.add(fld_YoneticiSifre);
 	}
 }

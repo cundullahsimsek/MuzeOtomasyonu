@@ -42,6 +42,26 @@ public class Yonetici extends User {
     	 return list;
      }
      
+     public ArrayList <User> getMuzePersonelList(int muze_id) throws SQLException{
+    	 ArrayList<User> list = new ArrayList<>();
+    	
+    	 User obj;
+    	 try {
+    		 st = con.createStatement();
+    		 rs = st.executeQuery("SELECT u.id, u.tcno, u.adi,u.soyadi, u.turu, u.sifre  FROM calisan c LEFT JOIN kullanici u ON c.kullanici_id= u.id WHERE muze_id= " + muze_id);
+        	 while (rs.next()) {
+        		 
+        		 obj = new User(rs.getInt("u.id"), rs.getString("u.tcno"), rs.getString("u.adi"),rs.getString("u.soyadi"), rs.getString("u.turu"), rs.getString("u.sifre") );
+        		 list.add(obj);
+        	 }
+			
+		} catch (SQLException e) {
+			
+			e.printStackTrace();
+		}
+    	 return list;
+     }
+     
      public boolean  addPersonel(String tcno, String adi, String soyadi, String sifre ) throws SQLException {
     	 
     	 String query = "INSERT INTO kullanici " + "(tcno, adi, soyadi, turu,sifre) VALUES" + "(?,?,?,?,?)";
@@ -100,6 +120,38 @@ public class Yonetici extends User {
     	 preparedStatement.setInt(5, id);
     	 
     	 preparedStatement.executeUpdate();
+    	 key = true;
+    	 
+	} catch (Exception e) {
+		e.printStackTrace();
+	}   
+	 if (key)
+		 return true;
+	 else 
+		 return false;
+ }
+ 
+ public boolean  addcalisan(int kullanici_id ,int muze_id) throws SQLException {
+	 
+	 String query = "INSERT INTO calisan " + "(kullanici_id, muze_id) VALUES" + "(?,?)";
+	 boolean key =false;
+	 int count=0;
+	 try {
+		 st = con.createStatement();
+		 //rs= st.executeQuery("SELECT * FROM calisan WHERE muze_id=" + muze_id + "AND kullanici_id= " +kullanici_id );
+		 rs= st.executeQuery("SELECT * FROM calisan WHERE muze_id= ' muze_id' AND kullanici_id='kullanici_id' ");
+		 
+		 while (rs.next()) {
+			 count++; 
+		 } 
+		 if (count==0) {
+		 
+    	 preparedStatement = con.prepareStatement(query);
+    	 preparedStatement.setInt(1, kullanici_id);
+    	 preparedStatement.setInt(2, muze_id);
+    	 preparedStatement.executeUpdate();
+		 }
+		 
     	 key = true;
     	 
 	} catch (Exception e) {
